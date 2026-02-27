@@ -28,8 +28,9 @@ export default defineConfig({
         proxy: {
             // Any request starting with /api will be forwarded to backend
             "/api": {
-                target: "http://localhost:5000", // Our Express backend
+                target: "https://clinic-management-backend-7j55.onrender.com", // Our deployed Express backend
                 changeOrigin: true, // Needed for virtual hosted sites
+                secure: false, // In case of HTTPS redirect issues
             },
         },
     },
