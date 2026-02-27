@@ -1,0 +1,22 @@
+# Don't copy node_modules from either service
+**/node_modules
+
+# Don't copy build artifacts
+**/dist
+**/.next
+**/build
+
+# Git history
+.git
+.gitignore
+
+# All .env files (secrets are passed via docker-compose environment)
+**/.env
+**/.env.*
+
+# Logs
+**/*.log
+
+# OS files
+.DS_Store
+Thumbs.db

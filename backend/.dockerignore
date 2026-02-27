@@ -1,0 +1,18 @@
+# node_modules are installed fresh inside the container - don't copy them
+node_modules
+
+# Git history and config not needed in the image
+.git
+.gitignore
+
+# Environment file - secrets should NOT be baked into images!
+# Pass them via docker-compose environment or Docker secrets
+.env
+
+# Log files
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db

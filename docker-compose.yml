@@ -1,0 +1,86 @@
+# ============================================================
+# DOCKER COMPOSE - Clinic Management System
+# ============================================================
+#
+# WHAT IS DOCKER COMPOSE?
+# Docker Compose lets you define and run multiple containers
+# together as a single application. Instead of running each
+# container manually, one "docker compose up" starts everything.
+#
+# This file defines 2 services:
+#   1. backend  - Node.js/Express API (port 5000 internally)
+#   2. frontend - Nginx serving the React build (port 80 → 3000)
+#
+# HOW DO THE CONTAINERS TALK TO EACH OTHER?
+# Docker Compose creates a private network between all services.
+# Each service can reach others by their SERVICE NAME.
+# So the frontend Nginx can proxy to http://backend:5000
+# and Docker handles the DNS resolution automatically.
+# ============================================================
+
+version: "3.8"
+
+services:
+
+  # ── BACKEND SERVICE ──────────────────────────────────────
+  backend:
+    # Build from the Dockerfile in the ./backend folder
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    # Container name for easy identification
+    container_name: clinic-backend
+
+    # Restart policy: restart if the container crashes
+    restart: unless-stopped
+
+    # Environment variables passed into the container.
+    # These override (or replace) the .env file inside the image.
+    # IMPORTANT: Never hard-code production secrets here!
+    # For production, use Docker secrets or an .env file referenced below.
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+
+    # Expose port 5000 to the HOST machine (optional: only needed if
+    # you want to call the backend API directly from outside Docker)
+    ports:
+      - "5000:5000"
+
+    # Custom Docker network so services can discover each other by name
+    networks:
+      - clinic-network
+
+  # ── FRONTEND SERVICE ─────────────────────────────────────
+  frontend:
+    # Build from the Dockerfile in the ./frontend folder
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    container_name: clinic-frontend
+
+    restart: unless-stopped
+
+    # Map host port 3000 → container port 80 (Nginx default port)
+    # Access the app at: http://localhost:3000
+    ports:
+      - "3000:80"
+
+    # Frontend depends on backend - backend starts first
+    depends_on:
+      - backend
+
+    networks:
+      - clinic-network
+
+# ── NETWORK DEFINITION ───────────────────────────────────
+# Create an isolated "bridge" network for our app containers.
+# Services on this network can talk to each other by name,
+# but are isolated from other Docker apps on the machine.
+networks:
+  clinic-network:
+    driver: bridge

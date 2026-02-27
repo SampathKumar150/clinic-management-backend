@@ -1,0 +1,20 @@
+# node_modules - reinstalled inside container
+node_modules
+
+# Build output - generated during Docker build stage
+dist
+
+# Git
+.git
+.gitignore
+
+# Dev environment files
+.env
+.env.local
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
